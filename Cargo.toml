@@ -1,0 +1,10 @@
+[package]
+name = "senatus"
+version = "0.1.0"
+authors = ["nokaa <nokaa@cock.li>"]
+
+[dependencies]
+env_logger = "0.3.5"
+log = "0.3.6"
+hayaku = { git = "https://git.nokaa.moe/nokaa/hayaku.git" }
+regex = "0.1"
