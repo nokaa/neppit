@@ -1,0 +1,17 @@
+name = "Senatus"
+boards = ["Anime", "Manga"]
+rules = [
+"1. Do not post illegal content",
+"2. You must be 18 or older to post on or view any boards/threads"
+]
+
+# What port the server runs on. Defaults to ":3000"
+#port = ":3333"
+
+# If senatus is run behind a proxy of some sort, e.g. nginx, you will
+# want to set a header equal to the remoteaddr value. proxy_ip_header should
+# be set to that header name.
+#
+# If senatus is not behind a proxy/load balancer, you can leave this
+# value commented out.
+#proxy_ip_header = ""

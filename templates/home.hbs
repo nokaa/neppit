@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1.0"/>
+    </head>
+    <body>
+        <h1>{{name}}</h1>
+        {{#each boards}}
+            <h3><a href="/{{this}}">{{this}}</a></h3>
+        {{/each}}
+        {{#each rules}}
+            <li>{{this}}</li>
+        {{/each}}
+    </body>
+</html>
