@@ -7,7 +7,6 @@ authors = ["nokaa <nokaa@cock.li>"]
 env_logger = "0.3.5"
 log = "0.3.6"
 hayaku = { git = "https://git.nokaa.moe/nokaa/hayaku.git" }
-regex = "0.1"
 serde = "0.8.16"
 serde_derive = "0.8"
 serde_json = "0.8.3"

@@ -1,5 +1,4 @@
 name = "Senatus"
-boards = ["Anime", "Manga"]
 rules = [
 "1. Do not post illegal content",
 "2. You must be 18 or older to post on or view any boards/threads"
@@ -15,3 +14,13 @@ rules = [
 # If senatus is not behind a proxy/load balancer, you can leave this
 # value commented out.
 #proxy_ip_header = ""
+
+[boards.a]
+short_name = "w"
+long_name = "Weeb"
+description = "Talk about anime and manga!"
+
+[boards.rust]
+short_name = "rust"
+long_name = "Rust"
+description = "Talk about the Rust programming language"
