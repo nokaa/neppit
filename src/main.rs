@@ -21,7 +21,7 @@ use std::fs;
 use std::io::{Read, Write};
 use std::rc::Rc;
 
-use hayaku::{Http, Router, Request, ResponseWriter};
+use hayaku::{Http, Router, Request, ResponseWriter, Status};
 use handlebars::Handlebars;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -35,14 +35,6 @@ struct Config {
 }
 
 impl Config {
-    /*fn get_board_longname(&self, short_name: &String) -> Option<String> {
-        for &(ref s, ref l) in &self.boards {
-            if s == short_name {
-                return Some(l.clone());
-            }
-        }
-        None
-    }*/
     fn get_board(&self, short_name: &String) -> Option<&Board> {
         self.boards.get(short_name)
     }
@@ -72,12 +64,12 @@ fn main() {
         }
         None => "0.0.0.0:3000".parse().unwrap(),
     };
-    info!("listening on {}", addr);
 
     let mut templates = Handlebars::new();
     templates.register_template_file("home", "templates/home.hbs").unwrap();
     templates.register_template_file("board", "templates/board.hbs").unwrap();
     templates.register_template_file("thread", "templates/thread.hbs").unwrap();
+    templates.register_template_file("404", "templates/404.hbs").unwrap();
 
     let ctx = Context {
         config: config,
@@ -86,10 +78,13 @@ fn main() {
 
     let mut router = Router::new();
     router.get("/", Rc::new(home_handler)).unwrap();
+    router.get("/404", Rc::new(not_found_handler)).unwrap();
     router.get("/b/:board", Rc::new(board_handler)).unwrap();
     router.get("/b/:board/:thread", Rc::new(thread_handler)).unwrap();
+    router.set_not_found_handler(Rc::new(not_found_handler));
 
     let http = Http::new(router, ctx);
+    info!("listening on {}", addr);
     http.listen_and_serve(addr);
 }
 
@@ -103,7 +98,12 @@ fn home_handler(_req: &Request, res: &mut ResponseWriter, ctx: &Context) {
 fn board_handler(req: &Request, res: &mut ResponseWriter, ctx: &Context) {
     let params = hayaku::get_path_params(req);
     let board = params.get("board").unwrap();
-    let board = ctx.config.get_board(board).unwrap();
+    let board = if let Some(b) = ctx.config.get_board(board) {
+        b
+    } else {
+        return not_found_handler(req, res, ctx);
+    };
+
 
     let result = ctx.templates.render("board", &board).unwrap();
     debug!("{}", result);
@@ -113,8 +113,27 @@ fn board_handler(req: &Request, res: &mut ResponseWriter, ctx: &Context) {
 fn thread_handler(req: &Request, res: &mut ResponseWriter, ctx: &Context) {
     let params = hayaku::get_path_params(req);
     let board = params.get("board").unwrap();
+    let board = if let Some(b) = ctx.config.get_board(board) {
+        b
+    } else {
+        return not_found_handler(req, res, ctx);
+    };
+
     let thread = params.get("thread").unwrap();
-    let result = ctx.templates.render("thread", &()).unwrap();
+    let thread = if let Some(t) = board.get_thread(thread) {
+        t
+    } else {
+        return not_found_handler(req, res, ctx);
+    };
+
+    let result = ctx.templates.render("thread", &(board, thread)).unwrap();
     debug!("{}", result);
+    res.write_all(result.as_bytes()).unwrap();
+}
+
+fn not_found_handler(_req: &Request, res: &mut ResponseWriter, ctx: &Context) {
+    let result = ctx.templates.render("404", &()).unwrap();
+    debug!("{}", result);
+    res.status(Status::NotFound);
     res.write_all(result.as_bytes()).unwrap();
 }

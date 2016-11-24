@@ -2,7 +2,7 @@ use post::Post;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Thread {
-    thread_number: usize,
+    pub thread_number: usize,
     subject: String,
     name: String,
     email: String,
