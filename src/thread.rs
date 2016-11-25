@@ -15,5 +15,13 @@ pub struct Thread {
     name: String,
     email: String,
     content: String,
-    childrn: Vec<Post>,
+    children: Vec<Post>,
+}
+
+pub struct NewThread {
+    pub subject: String,
+    pub name: String,
+    pub email: String,
+    pub content: String,
+    pub children: Vec<Post>,
 }

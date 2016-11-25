@@ -6,28 +6,37 @@
  *
  * Ἥφαιστος
  * */
-use thread::Thread;
+use super::schema::boards;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Queryable, Serialize, Deserialize, Debug, Clone)]
 pub struct Board {
     short_name: String,
     long_name: String,
     description: String,
+    post_number: i32,
     // The currently active threads for this board
-    active_threads: Option<Vec<Thread>>,
+    active_threads: Vec<i32>,
+}
+
+#[derive(Insertable, Serialize, Deserialize, Debug, Clone)]
+#[table_name="boards"]
+pub struct NewBoard {
+    pub short_name: String,
+    long_name: String,
+    description: String,
+    active_threads: Vec<i32>,
 }
 
 impl Board {
-    pub fn get_thread(&self, thread: &String) -> Option<&Thread> {
-        if let Some(ref threads) = self.active_threads {
-            let thread = usize::from_str_radix(thread, 10).unwrap();
-            for t in threads {
-                if t.thread_number == thread {
-                    return Some(t);
+    pub fn thread_is_active(&self, thread: &String) -> bool {
+        if !self.active_threads.is_empty() {
+            let thread = i32::from_str_radix(thread, 10).unwrap();
+            for &t in &self.active_threads {
+                if t == thread {
+                    return true;
                 }
             }
         }
-
-        None
+        false
     }
 }
