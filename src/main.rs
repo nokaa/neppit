@@ -36,7 +36,6 @@ use handlebars::Handlebars;
 struct Config {
     name: String,
     boards: HashMap<String, Board>,
-    // boards: Vec<(String, String)>,
     rules: Vec<String>,
     port: Option<String>,
     proxy_ip_header: Option<String>,
@@ -87,16 +86,21 @@ fn main() {
     let mut router = Router::new();
     router.get("/", Rc::new(home_handler)).unwrap();
     router.get("/404", Rc::new(not_found_handler)).unwrap();
-    router.get("/b/:board", Rc::new(board_handler)).unwrap();
-    router.get("/b/:board/:thread", Rc::new(thread_handler)).unwrap();
+    router.get("/b/{board:[:alnum:]+}", Rc::new(board_handler)).unwrap();
+    router.post("/b/{board:[:alnum:]+}", Rc::new(new_thread_handler)).unwrap();
+    router.get(r"/b/{board:[:alnum:]+}/{thread:[\d]+}",
+             Rc::new(thread_handler))
+        .unwrap();
     router.set_not_found_handler(Rc::new(not_found_handler));
 
-    let http = Http::new(router, ctx);
+    let mut http = Http::new(router, ctx);
+    http.sanitize();
     info!("listening on {}", addr);
     http.listen_and_serve(addr);
 }
 
 fn home_handler(_req: &Request, res: &mut ResponseWriter, ctx: &Context) {
+    info!("home hander");
     let ref tmpl_ctx = ctx.config;
     let result = ctx.templates.render("home", &tmpl_ctx).unwrap();
     debug!("{}", result);
@@ -104,6 +108,7 @@ fn home_handler(_req: &Request, res: &mut ResponseWriter, ctx: &Context) {
 }
 
 fn board_handler(req: &Request, res: &mut ResponseWriter, ctx: &Context) {
+    info!("board hander");
     let params = hayaku::get_path_params(req);
     let board = params.get("board").unwrap();
     let board = if let Some(b) = ctx.config.get_board(board) {
@@ -118,7 +123,17 @@ fn board_handler(req: &Request, res: &mut ResponseWriter, ctx: &Context) {
     res.write_all(result.as_bytes()).unwrap();
 }
 
+fn new_thread_handler(req: &Request, res: &mut ResponseWriter, ctx: &Context) {
+    info!("new thread hander");
+    let name = req.form_value("name").unwrap();
+    let subject = req.form_value("subject").unwrap();
+    let email = req.form_value("email").unwrap();
+    let content = req.form_value("content").unwrap();
+    // Write to database
+}
+
 fn thread_handler(req: &Request, res: &mut ResponseWriter, ctx: &Context) {
+    info!("thread hander");
     let params = hayaku::get_path_params(req);
     let board = params.get("board").unwrap();
     let board = if let Some(b) = ctx.config.get_board(board) {
@@ -140,6 +155,7 @@ fn thread_handler(req: &Request, res: &mut ResponseWriter, ctx: &Context) {
 }
 
 fn not_found_handler(_req: &Request, res: &mut ResponseWriter, ctx: &Context) {
+    info!("not found hander");
     let result = ctx.templates.render("404", &()).unwrap();
     debug!("{}", result);
     res.status(Status::NotFound);

@@ -10,6 +10,9 @@ hayaku = { git = "https://git.nokaa.moe/nokaa/hayaku.git" }
 serde = "0.8.16"
 serde_derive = "0.8"
 serde_json = "0.8.3"
+diesel = "0.8.0"
+diesel_codegen = { version = "0.8.0", features = ["postgres"] }
+dotenv = "0.8.0"
 
 [dependencies.handlebars]
 version = "0.21.1"

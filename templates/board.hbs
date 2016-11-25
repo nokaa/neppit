@@ -7,5 +7,19 @@
     <body>
         <h1>{{long_name}}</h1>
         <p>{{description}}</p>
+        <form method="POST" action="">
+            <label for="name">Name</label><br>
+            <input name="name" type="text" /><br>
+            <label for="subject">Name</label><br>
+            <input name="subject" type="text" /><br>
+            <label for="email">Name</label><br>
+            <input name="email" type="text" /><br>
+            <label for="content">Name</label><br>
+            <textarea name="content" rows="24" type="text"></textarea><br>
+            <button name="action" type="submit">New Thread</button>
+        </form>
+        {{#each active_thread}}
+            <li>{{this.content}}</li>
+        {{/each}}
     </body>
 </html>
