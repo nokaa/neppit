@@ -15,7 +15,7 @@ pub struct Board {
     description: String,
     post_number: i32,
     // The currently active threads for this board
-    active_threads: Vec<i32>,
+    active_threads: Vec<i64>,
 }
 
 #[derive(Insertable, Serialize, Deserialize, Debug, Clone)]
@@ -24,7 +24,7 @@ pub struct NewBoard {
     pub short_name: String,
     long_name: String,
     description: String,
-    active_threads: Vec<i32>,
+    active_threads: Vec<i64>,
 }
 
 impl Board {

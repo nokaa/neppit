@@ -6,10 +6,25 @@
  *
  * Ἥφαιστος
  * */
-#[derive(Serialize, Deserialize, Debug, Clone)]
+use super::schema::posts;
+#[derive(Queryable, Serialize, Deserialize, Debug, Clone)]
 pub struct Post {
-    pub post_number: usize,
-    pub content: String,
+    pub post_number: i64,
+    pub board: String,
+    pub subject: Option<String>,
     pub name: String,
     pub email: String,
+    pub content: String,
+    pub thread: bool,
+}
+
+#[derive(Insertable, Serialize, Deserialize, Debug, Clone)]
+#[table_name="posts"]
+pub struct NewPost {
+    pub board: String,
+    pub subject: Option<String>,
+    pub name: String,
+    pub email: String,
+    pub content: String,
+    pub thread: bool,
 }
