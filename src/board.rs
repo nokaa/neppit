@@ -10,12 +10,12 @@ use super::schema::boards;
 
 #[derive(Queryable, Serialize, Deserialize, Debug, Clone)]
 pub struct Board {
-    short_name: String,
-    long_name: String,
-    description: String,
-    post_number: i32,
+    pub short_name: String,
+    pub long_name: String,
+    pub description: String,
+    pub post_number: i64,
     // The currently active threads for this board
-    active_threads: Vec<i64>,
+    pub active_threads: Vec<i64>,
 }
 
 #[derive(Insertable, Serialize, Deserialize, Debug, Clone)]
@@ -30,7 +30,7 @@ pub struct NewBoard {
 impl Board {
     pub fn thread_is_active(&self, thread: &String) -> bool {
         if !self.active_threads.is_empty() {
-            let thread = i32::from_str_radix(thread, 10).unwrap();
+            let thread = i64::from_str_radix(thread, 10).unwrap();
             for &t in &self.active_threads {
                 if t == thread {
                     return true;
