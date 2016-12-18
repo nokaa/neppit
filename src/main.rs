@@ -14,12 +14,14 @@ extern crate env_logger;
 extern crate hayaku;
 extern crate handlebars;
 extern crate dotenv;
-#[macro_use]
-extern crate diesel;
-#[macro_use]
-extern crate diesel_codegen;
+// [macro_use]
+// extern crate diesel;
+// [macro_use]
+// extern crate diesel_codegen;
+extern crate postgres;
 extern crate r2d2;
-extern crate r2d2_diesel;
+// extern crate r2d2_diesel;
+extern crate r2d2_postgres;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
@@ -40,9 +42,10 @@ use std::fs;
 use std::io::Read;
 use std::sync::Arc;
 
-use diesel::pg::PgConnection;
+// use diesel::pg::PgConnection;
 use dotenv::dotenv;
-use r2d2_diesel::ConnectionManager;
+// use r2d2_diesel::ConnectionManager;
+use r2d2_postgres::{PostgresConnectionManager, TlsMode};
 use hayaku::{Http, Router, Request, Response, Status};
 use handlebars::Handlebars;
 
@@ -90,16 +93,17 @@ fn main() {
     templates.register_template_file("thread", "templates/thread.hbs").unwrap();
     templates.register_template_file("404", "templates/404.hbs").unwrap();
 
-    // Open a connection to Postgres
-    let boards: Vec<NewBoard> = config.boards.values().map(|b| b.clone()).collect();
-
     // Read database url from `.env`
     dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
+    // Create db connection pool
     let r2d2_config = r2d2::Config::default();
-    let manager = ConnectionManager::<PgConnection>::new(database_url);
+    let manager = PostgresConnectionManager::new(database_url, TlsMode::None).unwrap();
     let pool = r2d2::Pool::new(r2d2_config, manager).expect("Failed to create pool");
+
+    // Create new boards listed in config
+    let boards: Vec<NewBoard> = config.boards.values().map(|b| b.clone()).collect();
     db::create_boards(pool.clone(), &boards);
 
     let ctx = Context {

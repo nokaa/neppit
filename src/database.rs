@@ -40,20 +40,26 @@ pub fn get_board(pool: Pool, board_name: &String) -> Option<Board> {
 }
 
 pub fn get_post_number(pool: Pool, board_name: &String) -> i64 {
-    use schema::boards as board;
-    use schema::boards::dsl::{boards, post_number};
+    // use schema::boards as board;
+    // use schema::boards::dsl::{boards, post_number};
+    use schema::boards::dsl::*;
     use std::ops::Deref;
 
     let pool = pool.get().unwrap();
     let conn = pool.deref();
 
-    let b: Board = board::dsl::boards.find(board_name).first(conn).unwrap();
-    let pnumber = b.post_number + 1;
-    let _ = diesel::update(boards.find(board_name))
+    // let b: Board = board::dsl::boards.find(board_name).first(conn).unwrap();
+    // let pnumber = b.post_number + 1;
+    let res = diesel::update(boards.filter(short_name.eq(board_name)))
+        .set(post_number.eq(post_number + 1))
+        .get_result::<Board>(conn);
+    /*let _ = diesel::update(boards.find(board_name))
         .set(post_number.eq(pnumber))
         .get_result::<Board>(conn);
 
     pnumber
+     */
+    0
 }
 
 pub fn board_exists(pool: Pool, board_name: &String) -> bool {
