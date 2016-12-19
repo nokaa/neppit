@@ -31,11 +31,12 @@ mod board;
 mod database;
 mod errors;
 mod post;
+mod routes;
 
 use board::NewBoard;
-use post::Post;
 use database as db;
 use errors::*;
+use routes::*;
 
 use std::collections::HashMap;
 use std::env;
@@ -45,7 +46,7 @@ use std::sync::Arc;
 
 use dotenv::dotenv;
 use r2d2_postgres::{PostgresConnectionManager, TlsMode};
-use hayaku::{Http, Router, Request, Response, Status};
+use hayaku::{Http, Router};
 use handlebars::Handlebars;
 
 lazy_static! {
@@ -53,7 +54,7 @@ lazy_static! {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-struct Config {
+pub struct Config {
     name: String,
     boards: HashMap<String, NewBoard>,
     rules: Vec<String>,
@@ -62,10 +63,10 @@ struct Config {
 }
 
 #[derive(Clone)]
-struct Context {
-    config: Config,
-    templates: Arc<Handlebars>,
-    db_pool: db::Pool,
+pub struct Context {
+    pub config: Config,
+    pub templates: Arc<Handlebars>,
+    pub db_pool: db::Pool,
 }
 
 fn main() {
@@ -131,98 +132,4 @@ fn main() {
     http.sanitize();
     info!("listening on {}", addr);
     http.listen_and_serve(addr);
-}
-
-fn home_handler(_req: &Request, res: &mut Response, ctx: &Context) {
-    info!("home handler");
-    let tmpl_ctx = &ctx.config;
-    let result = ctx.templates.render("home", &tmpl_ctx).unwrap();
-    debug!("{}", result);
-    res.body(result.as_bytes()).unwrap();
-}
-
-fn board_handler(req: &Request, res: &mut Response, ctx: &Context) {
-    info!("board handler");
-    let params = hayaku::get_path_params(req);
-    let board = params.get("board").unwrap_or(&EMPTY_STRING);
-    let pool = ctx.db_pool.clone();
-    let board = if let Ok(Some(b)) = database::get_board(pool, board) {
-        b
-    } else {
-        return not_found_handler(req, res, ctx);
-    };
-
-
-    let result = ctx.templates.render("board", &board).unwrap();
-    debug!("{}", result);
-    res.body(result.as_bytes()).unwrap();
-}
-
-fn new_thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
-    info!("new thread handler");
-    let params = hayaku::get_path_params(req);
-    let board = params.get("board").unwrap_or(&EMPTY_STRING);
-    let name = req.form_value("name").unwrap_or("".to_string());
-    let subject = req.form_value("subject").unwrap_or("".to_string());
-    let email = req.form_value("email").unwrap_or("".to_string());
-    let content = req.form_value("content").unwrap_or("".to_string());
-
-    let pool = &ctx.db_pool;
-    // Make sure that board exists
-    let board_exists = db::board_exists(pool.clone(), board);
-    if board_exists.is_err() || !board_exists.unwrap() {
-        return not_found_handler(req, res, ctx);
-    }
-
-    // Get post number
-    let post_number = if let Ok(num) = db::get_post_number(pool.clone(), board) {
-        num
-    } else {
-        return not_found_handler(req, res, ctx);
-    };
-
-    // Write to database
-    let thread = Post {
-        post_number: post_number,
-        board: board.clone(),
-        subject: Some(subject),
-        name: name,
-        email: email,
-        content: content,
-        thread: true,
-        parent: None,
-    };
-    if db::create_thread(pool.clone(), thread).is_err() {
-        return not_found_handler(req, res, ctx);
-    }
-}
-
-fn thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
-    info!("thread handler");
-    let params = hayaku::get_path_params(req);
-    let board = params.get("board").unwrap_or(&EMPTY_STRING);
-    // let board = if let Some(b) = ctx.config.get_board(board) {
-    // b
-    // } else {
-    // return not_found_handler(req, res, ctx);
-    // };
-
-    let thread = params.get("thread").unwrap_or(&EMPTY_STRING);
-    // let thread = if let Some(t) = board.get_thread(thread) {
-    // t
-    // } else {
-    // return not_found_handler(req, res, ctx);
-    // };
-
-    let result = ctx.templates.render("thread", &(board, thread)).unwrap();
-    debug!("{}", result);
-    res.body(result.as_bytes()).unwrap();
-}
-
-fn not_found_handler(_req: &Request, res: &mut Response, ctx: &Context) {
-    info!("not found hander");
-    let result = ctx.templates.render("404", &()).unwrap();
-    debug!("{}", result);
-    res.status(Status::NotFound);
-    res.body(result.as_bytes()).unwrap();
 }
