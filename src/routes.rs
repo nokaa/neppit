@@ -4,6 +4,8 @@ use super::{Context, EMPTY_STRING};
 use database as db;
 use post::Post;
 
+use std::str::FromStr;
+
 pub fn home_handler(_req: &Request, res: &mut Response, ctx: &Context) {
     info!("home handler");
     let tmpl_ctx = &ctx.config;
@@ -16,6 +18,8 @@ pub fn board_handler(req: &Request, res: &mut Response, ctx: &Context) {
     info!("board handler");
     let params = hayaku::get_path_params(req);
     let board = params.get("board").unwrap_or(&EMPTY_STRING);
+    info!("board: {}", board);
+
     let pool = ctx.db_pool.clone();
     let board = if let Ok(Some(b)) = db::get_board(pool, board) {
         b
@@ -49,6 +53,7 @@ pub fn new_thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
     let post_number = if let Ok(num) = db::get_post_number(pool.clone(), board) {
         num
     } else {
+        info!("Unable to get post number!");
         return not_found_handler(req, res, ctx);
     };
 
@@ -63,27 +68,42 @@ pub fn new_thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
         thread: true,
         parent: None,
     };
-    if db::create_thread(pool.clone(), thread).is_err() {
+    // if db::create_thread(pool.clone(), thread).is_err() {
+    if let Err(e) = db::create_thread(pool.clone(), thread) {
+        info!("Unable to create thread!");
+        info!("error: {}", e);
         return not_found_handler(req, res, ctx);
+    } else {
+        res.redirect(Status::Found, format!("/b/{}/{}", board, post_number), b"");
     }
 }
 
 pub fn thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
     info!("thread handler");
     let params = hayaku::get_path_params(req);
-    let board = params.get("board").unwrap_or(&EMPTY_STRING);
-    // let board = if let Some(b) = ctx.config.get_board(board) {
-    // b
-    // } else {
-    // return not_found_handler(req, res, ctx);
-    // };
+    let board_name = params.get("board").unwrap_or(&EMPTY_STRING);
+    let thread_number = params.get("thread").unwrap_or(&EMPTY_STRING);
+    let thread_number = if let Ok(t) = i64::from_str(thread_number) {
+        t
+    } else {
+        info!("Error converting to i64!");
+        return not_found_handler(req, res, ctx);
+    };
 
-    let thread = params.get("thread").unwrap_or(&EMPTY_STRING);
-    // let thread = if let Some(t) = board.get_thread(thread) {
-    // t
-    // } else {
-    // return not_found_handler(req, res, ctx);
-    // };
+    let pool = &ctx.db_pool;
+    let board = if let Ok(Some(b)) = db::get_board(pool.clone(), board_name) {
+        b
+    } else {
+        info!("board {} not found!", board_name);
+        return not_found_handler(req, res, ctx);
+    };
+
+    let thread = if let Ok(Some(t)) = db::get_thread(pool.clone(), board_name, thread_number) {
+        t
+    } else {
+        info!("thread {} not found!", thread_number);
+        return not_found_handler(req, res, ctx);
+    };
 
     let result = ctx.templates.render("thread", &(board, thread)).unwrap();
     debug!("{}", result);
@@ -91,7 +111,7 @@ pub fn thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
 }
 
 pub fn not_found_handler(_req: &Request, res: &mut Response, ctx: &Context) {
-    info!("not found hander");
+    info!("not found handler");
     let result = ctx.templates.render("404", &()).unwrap();
     debug!("{}", result);
     res.status(Status::NotFound);

@@ -35,7 +35,6 @@ mod routes;
 
 use board::NewBoard;
 use database as db;
-use errors::*;
 use routes::*;
 
 use std::collections::HashMap;
@@ -100,6 +99,7 @@ fn main() {
     // Read database url from `.env`
     dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    info!("db url: {}", database_url);
 
     // Create db connection pool
     let r2d2_config = r2d2::Config::default();
@@ -107,9 +107,11 @@ fn main() {
     let pool = r2d2::Pool::new(r2d2_config, manager).expect("Failed to create pool");
 
     // Create the tables if they do not already exist
+    info!("Creating tables");
     db::create_tables(pool.clone()).unwrap();
     // Create new boards listed in config
     let boards: Vec<NewBoard> = config.boards.values().cloned().collect();
+    info!("Creating boards {:?}", boards);
     db::create_boards(pool.clone(), &boards[..]).unwrap();
 
     let ctx = Context {

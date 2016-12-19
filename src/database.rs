@@ -40,18 +40,10 @@ pub fn create_boards(pool: Pool, boards: &[NewBoard]) -> Result<()> {
     let conn = pool.get().unwrap();
 
     for b in boards {
-        let rows = conn.query("SELECT short_name FROM boards WHERE short_name = $1",
-                   &[&b.short_name])?;
-        if rows.is_empty() {
-            info!("creating board {:?}", b);
-            conn.execute("INSERT INTO boards (short_name, long_name, description, post_number, \
-                          active_threads) VALUES ($1, $2, $3, $4, $5)",
-                         &[&b.short_name,
-                           &b.long_name,
-                           &b.description,
-                           &0i64,
-                           &Vec::<i64>::new()])?;
-        }
+        conn.execute("INSERT INTO boards (short_name, long_name, description, post_number, \
+                      active_threads) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (short_name) DO \
+                      NOTHING",
+                     &[&b.short_name, &b.long_name, &b.description, &0i64, &Vec::<i64>::new()])?;
     }
 
     Ok(())
@@ -60,8 +52,10 @@ pub fn create_boards(pool: Pool, boards: &[NewBoard]) -> Result<()> {
 pub fn get_board(pool: Pool, board_name: &str) -> Result<Option<Board>> {
     let conn = pool.get().unwrap();
 
-    let rows = conn.query("SELECT short_name FROM boards WHERE short_name = $1",
-               &[&board_name])?;
+    let rows =
+        conn.query("SELECT short_name, long_name, description, post_number, active_threads \
+                    FROM boards WHERE short_name = $1",
+                   &[&board_name])?;
     if rows.is_empty() {
         Ok(None)
     } else {
@@ -80,9 +74,11 @@ pub fn get_board(pool: Pool, board_name: &str) -> Result<Option<Board>> {
 pub fn get_post_number(pool: Pool, board_name: &str) -> Result<i64> {
     let conn = pool.get().unwrap();
 
-    let rows = conn.query("UPDATE boards SET post_number = post_number + 1 WHERE board_name = $1",
-               &[&board_name])?;
-    Ok(rows.get(0).get(3))
+    let rows =
+        conn.query("UPDATE boards SET post_number = post_number + 1 WHERE short_name = $1 \
+                    RETURNING post_number",
+                   &[&board_name])?;
+    Ok(rows.get(0).get(0))
 }
 
 pub fn board_exists(pool: Pool, board_name: &str) -> Result<bool> {
@@ -90,12 +86,13 @@ pub fn board_exists(pool: Pool, board_name: &str) -> Result<bool> {
 
     let rows = conn.query("SELECT short_name FROM boards WHERE short_name = $1",
                &[&board_name])?;
-    Ok(rows.is_empty())
+    Ok(!rows.is_empty())
 }
 
 pub fn create_thread(pool: Pool, thread: Post) -> Result<()> {
     let conn = pool.get().unwrap();
 
+    info!("Inserting new thread into posts table");
     conn.execute("INSERT INTO posts (post_number, board, subject, name, email, content, thread, \
                   parent) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
                  &[&thread.post_number,
@@ -106,5 +103,36 @@ pub fn create_thread(pool: Pool, thread: Post) -> Result<()> {
                    &thread.content,
                    &thread.thread,
                    &thread.parent])?;
+
+    info!("Adding new thread to board list");
+    conn.execute("UPDATE boards SET active_threads = $1::BIGINT || active_threads WHERE \
+                  short_name = $2",
+                 &[&thread.post_number, &thread.board])?;
     Ok(())
+}
+
+pub fn get_thread(pool: Pool, board_name: &str, thread_number: i64) -> Result<Option<Post>> {
+    let conn = pool.get().unwrap();
+
+    let rows =
+        conn.query("SELECT post_number, board, subject, name, email, content, thread, parent \
+                    FROM posts WHERE board = $1 AND post_number = $2",
+                   &[&board_name, &thread_number])?;
+
+    if rows.is_empty() {
+        Ok(None)
+    } else {
+        let row = rows.get(0);
+        let thread = Post {
+            post_number: row.get(0),
+            board: row.get(1),
+            subject: row.get(2),
+            name: row.get(3),
+            email: row.get(4),
+            content: row.get(5),
+            thread: row.get(6),
+            parent: row.get(7),
+        };
+        Ok(Some(thread))
+    }
 }
