@@ -91,10 +91,10 @@ pub fn board_exists(pool: Pool, board_name: &str) -> Result<bool> {
 
 pub fn create_thread(pool: Pool, thread: Post) -> Result<()> {
     let conn = pool.get().unwrap();
+    let trans = conn.transaction()?;
 
-    info!("Inserting new thread into posts table");
-    conn.execute("INSERT INTO posts (post_number, board, subject, name, email, content, thread, \
-                  parent) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+    trans.execute("INSERT INTO posts (post_number, board, subject, name, email, content, thread, \
+                  parent) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);",
                  &[&thread.post_number,
                    &thread.board,
                    &thread.subject,
@@ -104,10 +104,11 @@ pub fn create_thread(pool: Pool, thread: Post) -> Result<()> {
                    &thread.thread,
                    &thread.parent])?;
 
-    info!("Adding new thread to board list");
-    conn.execute("UPDATE boards SET active_threads = $1::BIGINT || active_threads WHERE \
+    trans.execute("UPDATE boards SET active_threads = $1::BIGINT || active_threads WHERE \
                   short_name = $2",
                  &[&thread.post_number, &thread.board])?;
+
+    trans.commit()?;
     Ok(())
 }
 
