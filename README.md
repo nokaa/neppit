@@ -1,8 +1,8 @@
-# senatus
+# Neppit
 
 An anonymous Internet forum.
 
-Senatus is also used as a test-bed for [hayaku](https://github.com/nokaa/hayaku), and largely determines what features are developed.
+Neppit is also used as a test-bed for [hayaku](https://github.com/nokaa/hayaku), and largely determines what features are developed.
 
 ### Install
 Make sure that you have setup [Postgresql](https://wiki.archlinux.org/index.php/PostgreSQL).
@@ -10,9 +10,9 @@ Make sure that you have setup [Postgresql](https://wiki.archlinux.org/index.php/
 ```
 # Install diesel-cli
 $ cargo install diesel_cli
-$ createdb senatus
+$ createdb neppit
 # replace `username` `password` and `localhost` as needed
-$ echo "DATABASE_URL=postgres://username:password@localhost/senatus" > .env
+$ echo "DATABASE_URL=postgres://username:password@localhost/neppit" > .env
 $ diesel migration run
 $ cargo build --release
 $ cargo run --release

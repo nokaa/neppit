@@ -6,9 +6,7 @@
  *
  * Ἥφαιστος
  * */
-use super::schema::boards;
-
-#[derive(Queryable, Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Board {
     pub short_name: String,
     pub long_name: String,
@@ -18,25 +16,9 @@ pub struct Board {
     pub active_threads: Vec<i64>,
 }
 
-#[derive(Insertable, Serialize, Deserialize, Debug, Clone)]
-#[table_name="boards"]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct NewBoard {
     pub short_name: String,
-    long_name: String,
-    description: String,
-    active_threads: Vec<i64>,
-}
-
-impl Board {
-    pub fn thread_is_active(&self, thread: &String) -> bool {
-        if !self.active_threads.is_empty() {
-            let thread = i64::from_str_radix(thread, 10).unwrap();
-            for &t in &self.active_threads {
-                if t == thread {
-                    return true;
-                }
-            }
-        }
-        false
-    }
+    pub long_name: String,
+    pub description: String,
 }

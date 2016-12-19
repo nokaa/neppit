@@ -7,20 +7,20 @@
  * Ἥφαιστος
  * */
 #![feature(proc_macro)]
+#![recursion_limit = "1024"]
 
 #[macro_use]
 extern crate log;
 extern crate env_logger;
+#[macro_use]
+extern crate error_chain;
+#[macro_use]
+extern crate lazy_static;
 extern crate hayaku;
 extern crate handlebars;
 extern crate dotenv;
-// [macro_use]
-// extern crate diesel;
-// [macro_use]
-// extern crate diesel_codegen;
 extern crate postgres;
 extern crate r2d2;
-// extern crate r2d2_diesel;
 extern crate r2d2_postgres;
 #[macro_use]
 extern crate serde_derive;
@@ -29,12 +29,13 @@ extern crate toml;
 
 mod board;
 mod database;
-mod schema;
+mod errors;
 mod post;
 
 use board::NewBoard;
 use post::Post;
 use database as db;
+use errors::*;
 
 use std::collections::HashMap;
 use std::env;
@@ -42,12 +43,14 @@ use std::fs;
 use std::io::Read;
 use std::sync::Arc;
 
-// use diesel::pg::PgConnection;
 use dotenv::dotenv;
-// use r2d2_diesel::ConnectionManager;
 use r2d2_postgres::{PostgresConnectionManager, TlsMode};
 use hayaku::{Http, Router, Request, Response, Status};
 use handlebars::Handlebars;
+
+lazy_static! {
+    static ref EMPTY_STRING: String = String::from("");
+}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct Config {
@@ -102,9 +105,11 @@ fn main() {
     let manager = PostgresConnectionManager::new(database_url, TlsMode::None).unwrap();
     let pool = r2d2::Pool::new(r2d2_config, manager).expect("Failed to create pool");
 
+    // Create the tables if they do not already exist
+    db::create_tables(pool.clone()).unwrap();
     // Create new boards listed in config
-    let boards: Vec<NewBoard> = config.boards.values().map(|b| b.clone()).collect();
-    db::create_boards(pool.clone(), &boards);
+    let boards: Vec<NewBoard> = config.boards.values().cloned().collect();
+    db::create_boards(pool.clone(), &boards[..]).unwrap();
 
     let ctx = Context {
         config: config,
@@ -139,10 +144,9 @@ fn home_handler(_req: &Request, res: &mut Response, ctx: &Context) {
 fn board_handler(req: &Request, res: &mut Response, ctx: &Context) {
     info!("board handler");
     let params = hayaku::get_path_params(req);
-    let board = params.get("board").unwrap();
-    // let board = if let Some(b) = ctx.config.get_board(board) {
+    let board = params.get("board").unwrap_or(&EMPTY_STRING);
     let pool = ctx.db_pool.clone();
-    let board = if let Some(b) = database::get_board(pool, board) {
+    let board = if let Ok(Some(b)) = database::get_board(pool, board) {
         b
     } else {
         return not_found_handler(req, res, ctx);
@@ -157,20 +161,25 @@ fn board_handler(req: &Request, res: &mut Response, ctx: &Context) {
 fn new_thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
     info!("new thread handler");
     let params = hayaku::get_path_params(req);
-    let board = params.get("board").unwrap();
-    let name = req.form_value("name").unwrap();
-    let subject = req.form_value("subject").unwrap();
-    let email = req.form_value("email").unwrap();
-    let content = req.form_value("content").unwrap();
+    let board = params.get("board").unwrap_or(&EMPTY_STRING);
+    let name = req.form_value("name").unwrap_or("".to_string());
+    let subject = req.form_value("subject").unwrap_or("".to_string());
+    let email = req.form_value("email").unwrap_or("".to_string());
+    let content = req.form_value("content").unwrap_or("".to_string());
 
     let pool = &ctx.db_pool;
     // Make sure that board exists
-    if !db::board_exists(pool.clone(), board) {
+    let board_exists = db::board_exists(pool.clone(), board);
+    if board_exists.is_err() || !board_exists.unwrap() {
         return not_found_handler(req, res, ctx);
     }
 
     // Get post number
-    let post_number = db::get_post_number(pool.clone(), board);
+    let post_number = if let Ok(num) = db::get_post_number(pool.clone(), board) {
+        num
+    } else {
+        return not_found_handler(req, res, ctx);
+    };
 
     // Write to database
     let thread = Post {
@@ -183,20 +192,22 @@ fn new_thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
         thread: true,
         parent: None,
     };
-    db::create_thread(pool.clone(), thread);
+    if db::create_thread(pool.clone(), thread).is_err() {
+        return not_found_handler(req, res, ctx);
+    }
 }
 
 fn thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
     info!("thread handler");
     let params = hayaku::get_path_params(req);
-    let board = params.get("board").unwrap();
+    let board = params.get("board").unwrap_or(&EMPTY_STRING);
     // let board = if let Some(b) = ctx.config.get_board(board) {
     // b
     // } else {
     // return not_found_handler(req, res, ctx);
     // };
 
-    let thread = params.get("thread").unwrap();
+    let thread = params.get("thread").unwrap_or(&EMPTY_STRING);
     // let thread = if let Some(t) = board.get_thread(thread) {
     // t
     // } else {
