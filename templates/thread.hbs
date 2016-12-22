@@ -5,6 +5,16 @@
         <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1.0"/>
     </head>
     <body>
+        <form method="POST" action="">
+            <label for="name">Name</label><br>
+            <input name="name" type="text" /><br>
+            <label for="email">Email</label><br>
+            <input name="email" type="text" /><br>
+            <label for="content">Content</label><br>
+            <textarea name="content" rows="24" type="text"></textarea><br>
+            <button name="action" type="submit">New Post</button>
+        </form>
+        <br><br>
         <h1>{{this.0.long_name}}</h1>
         <p>{{this.0.description}}</p>
         <li>

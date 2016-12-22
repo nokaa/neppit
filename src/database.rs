@@ -84,8 +84,21 @@ pub fn get_post_number(pool: Pool, board_name: &str) -> Result<i64> {
 pub fn board_exists(pool: Pool, board_name: &str) -> Result<bool> {
     let conn = pool.get().unwrap();
 
+    // TODO(nokaa): Look at the EXISTS keyword for this check:
+    // https://stackoverflow.com/questions/7471625/fastest-check-if-row-exists-in-postgresql
     let rows = conn.query("SELECT short_name FROM boards WHERE short_name = $1",
                &[&board_name])?;
+    Ok(!rows.is_empty())
+}
+
+pub fn thread_exists(pool: Pool, board_name: &str, thread_number: i64) -> Result<bool> {
+    let conn = pool.get().unwrap();
+
+    // TODO(nokaa): Look at the EXISTS keyword for this check:
+    // https://stackoverflow.com/questions/7471625/fastest-check-if-row-exists-in-postgresql
+    let rows = conn.query("SELECT post_number, board, thread FROM posts WHERE short_name = $1 AND \
+                post_number = $2 AND thread = $3",
+               &[&board_name, &thread_number, &true])?;
     Ok(!rows.is_empty())
 }
 

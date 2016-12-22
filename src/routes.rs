@@ -36,11 +36,25 @@ pub fn board_handler(req: &Request, res: &mut Response, ctx: &Context) {
 pub fn new_thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
     info!("new thread handler");
     let params = hayaku::get_path_params(req);
-    let board = params.get("board").unwrap_or(&EMPTY_STRING);
+    let board = params.get("board").unwrap();
     let name = req.form_value("name").unwrap_or("".to_string());
     let subject = req.form_value("subject").unwrap_or("".to_string());
     let email = req.form_value("email").unwrap_or("".to_string());
     let content = req.form_value("content").unwrap_or("".to_string());
+
+    // TODO(nokaa): We should also check that the content doesn't contain
+    // only whitespace. Otherwise the user could just write a space and achieve
+    // the same result.
+    if content == "" {
+        // TODO(nokaa): Return some sort of error here telling the
+        // user that they need to have content to create a post.
+        return not_found_handler(req, res, ctx);
+    }
+    let name = if name == "" {
+        "Anonymous".to_string()
+    } else {
+        name
+    };
 
     let pool = &ctx.db_pool;
     // Make sure that board exists
@@ -68,7 +82,7 @@ pub fn new_thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
         thread: true,
         parent: None,
     };
-    // if db::create_thread(pool.clone(), thread).is_err() {
+
     if let Err(e) = db::create_thread(pool.clone(), thread) {
         info!("Unable to create thread!");
         info!("error: {}", e);
@@ -108,6 +122,45 @@ pub fn thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
     let result = ctx.templates.render("thread", &(board, thread)).unwrap();
     debug!("{}", result);
     res.body(result.as_bytes()).unwrap();
+}
+
+pub fn new_thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
+    info!("new thread handler");
+    let params = hayaku::get_path_params(req);
+    let board = params.get("board").unwrap();
+    let thread_number = params.get("thread").unwrap();
+    let name = req.form_value("name").unwrap_or("".to_string());
+    let email = req.form_value("email").unwrap_or("".to_string());
+    let content = req.form_value("content").unwrap_or("".to_string());
+
+    // TODO(nokaa): We should also check that the content doesn't contain
+    // only whitespace. Otherwise the user could just write a space and achieve
+    // the same result.
+    if content == "" {
+        // TODO(nokaa): Return some sort of error here telling the
+        // user that they need to have content to create a post.
+        return not_found_handler(req, res, ctx);
+    }
+    let name = if name == "" {
+        "Anonymous".to_string()
+    } else {
+        name
+    };
+
+    // TODO(nokaa): convert thread number in path to i64.
+    let thread_number = 0;
+
+    let pool = &ctx.db_pool;
+    // Make sure that board exists
+    let board_exists = db::board_exists(pool.clone(), board);
+    if board_exists.is_err() || !board_exists.unwrap() {
+        return not_found_handler(req, res, ctx);
+    }
+    // Make sure that thread exists
+    let thread_exists = db::thread_exists(pool.clone(), thread_number);
+    if thread_exists.is_err() || !thread_exists.unwrap() {
+        return not_found_handler(req, res, ctx);
+    }
 }
 
 pub fn not_found_handler(_req: &Request, res: &mut Response, ctx: &Context) {
