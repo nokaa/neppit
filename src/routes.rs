@@ -124,7 +124,7 @@ pub fn thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
     res.body(result.as_bytes()).unwrap();
 }
 
-pub fn new_thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
+pub fn new_post_handler(req: &Request, res: &mut Response, ctx: &Context) {
     info!("new thread handler");
     let params = hayaku::get_path_params(req);
     let board = params.get("board").unwrap();
@@ -157,7 +157,7 @@ pub fn new_thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
         return not_found_handler(req, res, ctx);
     }
     // Make sure that thread exists
-    let thread_exists = db::thread_exists(pool.clone(), thread_number);
+    let thread_exists = db::thread_exists(pool.clone(), board, thread_number);
     if thread_exists.is_err() || !thread_exists.unwrap() {
         return not_found_handler(req, res, ctx);
     }

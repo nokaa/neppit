@@ -19,6 +19,15 @@ pub fn create_tables(pool: Pool) -> Result<()> {
                   )",
                  &[])?;
 
+    // Create the admins table
+    conn.execute("CREATE TABLE IF NOT EXISTS admins (
+                    username VARCHAR PRIMARY KEY,
+                    password VARCHAR NOT NULL,
+                    boards VARCHAR[] NOT NULL,
+                    admin boolean NOT NULL
+                  )",
+                 &[])?;
+
     // Create the posts table
     conn.execute("CREATE TABLE IF NOT EXISTS posts (
                     post_number BIGINT NOT NULL,

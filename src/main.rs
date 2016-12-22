@@ -30,6 +30,7 @@ extern crate toml;
 mod board;
 mod database;
 mod errors;
+mod moderator;
 mod post;
 mod routes;
 
