@@ -12,8 +12,8 @@ dependencies = [
  "postgres 0.13.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "r2d2 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "r2d2_postgres 0.11.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde 0.8.20 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde_derive 0.8.20 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 0.8.21 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_derive 0.8.21 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_json 0.8.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -167,28 +167,28 @@ dependencies = [
  "log 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "pest 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "quick-error 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde 0.8.20 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 0.8.21 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_json 0.8.4 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "hayaku"
 version = "0.1.0"
-source = "git+https://github.com/hayaku-rs/hayaku.git#79be809e0ce0ffe8a331b2676562416d52a3a81a"
+source = "git+https://github.com/hayaku-rs/hayaku.git#b06db599f43fb6b5c0a638a61e240a0d28caf4c8"
 dependencies = [
  "cookie 0.1.0 (git+https://github.com/hayaku-rs/cookie.git)",
  "hayaku-http 0.1.0 (git+https://github.com/hayaku-rs/hayaku-http.git)",
  "hayaku-path 0.1.0 (git+https://github.com/hayaku-rs/hayaku-path.git)",
  "log 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "marksman_escape 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde_derive 0.8.20 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_derive 0.8.21 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_json 0.8.4 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "hayaku-http"
 version = "0.1.0"
-source = "git+https://github.com/hayaku-rs/hayaku-http.git#ff297c46a3131d326d00568cffdafcef51714395"
+source = "git+https://github.com/hayaku-rs/hayaku-http.git#225c72488ecbb71073442d6934905be9cc9bbb85"
 dependencies = [
  "cookie 0.1.0 (git+https://github.com/hayaku-rs/cookie.git)",
  "futures 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -203,14 +203,14 @@ dependencies = [
 [[package]]
 name = "hayaku-path"
 version = "0.1.0"
-source = "git+https://github.com/hayaku-rs/hayaku-path.git#61ce0f353a62c68e0fd6639c11d8cc7f1277c673"
+source = "git+https://github.com/hayaku-rs/hayaku-path.git#818fc61ebc3fdccaa80135179e1c328aefa41a35"
 dependencies = [
  "hayaku-http 0.1.0 (git+https://github.com/hayaku-rs/hayaku-http.git)",
  "log 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "quick-error 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex 0.1.80 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde 0.8.20 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde_derive 0.8.20 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 0.8.21 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_derive 0.8.21 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_json 0.8.4 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -222,7 +222,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "httbloat"
 version = "0.1.0"
-source = "git+https://github.com/hayaku-rs/httbloat#5c3ee970c8604adac391ac7acf5beb99d9ab1794"
+source = "git+https://github.com/hayaku-rs/httbloat#70d27cf4b60c95b997d173d5e7408f8848da5f5e"
 dependencies = [
  "chrono 0.2.25 (registry+https://github.com/rust-lang/crates.io-index)",
  "futures 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -569,22 +569,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "serde"
-version = "0.8.20"
+version = "0.8.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "serde_codegen"
-version = "0.8.20"
+version = "0.8.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "quote 0.3.10 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde_codegen_internals 0.11.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_codegen_internals 0.11.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 0.10.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "serde_codegen_internals"
-version = "0.11.2"
+version = "0.11.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "syn 0.10.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -592,10 +592,10 @@ dependencies = [
 
 [[package]]
 name = "serde_derive"
-version = "0.8.20"
+version = "0.8.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "serde_codegen 0.8.20 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_codegen 0.8.21 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -606,7 +606,7 @@ dependencies = [
  "dtoa 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "itoa 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.1.36 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde 0.8.20 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 0.8.21 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -709,7 +709,7 @@ name = "toml"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "serde 0.8.20 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 0.8.21 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -833,10 +833,10 @@ dependencies = [
 "checksum rustc_version 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)" = "c5f5376ea5e30ce23c03eb77cbe4962b988deead10910c372b226388b594c084"
 "checksum scoped-tls 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "f417c22df063e9450888a7561788e9bd46d3bb3c1466435b4eccb903807f147d"
 "checksum semver 0.1.20 (registry+https://github.com/rust-lang/crates.io-index)" = "d4f410fedcf71af0345d7607d246e7ad15faaadd49d240ee3b24e5dc21a820ac"
-"checksum serde 0.8.20 (registry+https://github.com/rust-lang/crates.io-index)" = "793aa8d4a777e46a68bbf88998cd957e638427ba5bfb0de22c92ff277b65bd21"
-"checksum serde_codegen 0.8.20 (registry+https://github.com/rust-lang/crates.io-index)" = "460354e47fffa7cf0c96fcf9a040fd170e957f43dd8032531083866eb4a51c11"
-"checksum serde_codegen_internals 0.11.2 (registry+https://github.com/rust-lang/crates.io-index)" = "55224f713f022184a1c332dc5c8b1ac634d25a355d54836386771947f12585e0"
-"checksum serde_derive 0.8.20 (registry+https://github.com/rust-lang/crates.io-index)" = "18030bce88caabea7707ea4150557377f4b08df5ba3909b2c6a9cb34967c9f30"
+"checksum serde 0.8.21 (registry+https://github.com/rust-lang/crates.io-index)" = "7b7c6bf11cf766473ea1d53eb4e3bc4e80f31f50082fc24077cf06f600279a66"
+"checksum serde_codegen 0.8.21 (registry+https://github.com/rust-lang/crates.io-index)" = "64e0d87d19ec28bf431ffa9bad1f1e4ea3b381cd616c6cc56dca9eedbc7f6ab8"
+"checksum serde_codegen_internals 0.11.3 (registry+https://github.com/rust-lang/crates.io-index)" = "afad7924a009f859f380e4a2e3a509a845c2ac66435fcead74a4d983b21ae806"
+"checksum serde_derive 0.8.21 (registry+https://github.com/rust-lang/crates.io-index)" = "6e7ad1e74679b92730ca39c361ea125e2846df337c5d94d084eb2f7837c1843d"
 "checksum serde_json 0.8.4 (registry+https://github.com/rust-lang/crates.io-index)" = "3f7d3c184d35801fb8b32b46a7d58d57dbcc150b0eb2b46a1eb79645e8ecfd5b"
 "checksum slab 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "17b4fcaed89ab08ef143da37bc52adbcc04d4a69014f4c1208d6b51f0c47bc23"
 "checksum smallvec 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "4c8cbcd6df1e117c2210e13ab5109635ad68a929fcbb8964dc965b76cb5ee013"

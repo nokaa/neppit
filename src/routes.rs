@@ -11,7 +11,7 @@ pub fn home_handler(_req: &Request, res: &mut Response, ctx: &Context) {
     let tmpl_ctx = &ctx.config;
     let result = ctx.templates.render("home", &tmpl_ctx).unwrap();
     debug!("{}", result);
-    res.body(result.as_bytes()).unwrap();
+    res.body(result.as_bytes());
 }
 
 pub fn install_page_handler(_req: &Request, res: &mut Response, ctx: &Context) {
@@ -19,7 +19,7 @@ pub fn install_page_handler(_req: &Request, res: &mut Response, ctx: &Context) {
     let tmpl_ctx = &ctx.config;
     let result = ctx.templates.render("install", &tmpl_ctx).unwrap();
     debug!("{}", result);
-    res.body(result.as_bytes()).unwrap();
+    res.body(result.as_bytes());
 }
 
 pub fn install_handler(_req: &Request, res: &mut Response, ctx: &Context) {
@@ -42,7 +42,7 @@ pub fn board_handler(req: &Request, res: &mut Response, ctx: &Context) {
 
     let result = ctx.templates.render("board", &board).unwrap();
     debug!("{}", result);
-    res.body(result.as_bytes()).unwrap();
+    res.body(result.as_bytes());
 }
 
 pub fn new_thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
@@ -133,14 +133,14 @@ pub fn thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
 
     let result = ctx.templates.render("thread", &(board, thread)).unwrap();
     debug!("{}", result);
-    res.body(result.as_bytes()).unwrap();
+    res.body(result.as_bytes());
 }
 
 pub fn new_post_handler(req: &Request, res: &mut Response, ctx: &Context) {
     info!("new thread handler");
     let params = hayaku::get_path_params(req);
-    let board = params.get("board").unwrap();
-    let thread_number = params.get("thread").unwrap();
+    let board = &params["board"];
+    let thread_number = &params["thread"];
     let name = req.form_value("name").unwrap_or("".to_string());
     let email = req.form_value("email").unwrap_or("".to_string());
     let content = req.form_value("content").unwrap_or("".to_string());
@@ -180,5 +180,5 @@ pub fn not_found_handler(_req: &Request, res: &mut Response, ctx: &Context) {
     let result = ctx.templates.render("404", &()).unwrap();
     debug!("{}", result);
     res.status(Status::NotFound);
-    res.body(result.as_bytes()).unwrap();
+    res.body(result.as_bytes());
 }
