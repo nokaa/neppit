@@ -137,8 +137,6 @@ fn main() {
         .unwrap();
     router.set_not_found_handler(Arc::new(not_found_handler));
 
-    let mut http = Http::new(router, ctx);
-    http.sanitize();
     info!("listening on {}", addr);
-    http.listen_and_serve(addr);
+    Http::new(router, ctx).sanitize().threads(4).listen_and_serve(addr);
 }

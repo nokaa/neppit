@@ -188,7 +188,7 @@ dependencies = [
 [[package]]
 name = "hayaku-http"
 version = "0.1.0"
-source = "git+https://github.com/hayaku-rs/hayaku-http.git#125ec3cf438ddcb38c41576082ee4d8164611283"
+source = "git+https://github.com/hayaku-rs/hayaku-http.git#ff297c46a3131d326d00568cffdafcef51714395"
 dependencies = [
  "cookie 0.1.0 (git+https://github.com/hayaku-rs/cookie.git)",
  "futures 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
