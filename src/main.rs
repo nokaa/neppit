@@ -93,6 +93,7 @@ fn main() {
     // Register the templates we will use
     let mut templates = Handlebars::new();
     templates.register_template_file("home", "templates/home.hbs").unwrap();
+    templates.register_template_file("install", "templates/install.hbs").unwrap();
     templates.register_template_file("board", "templates/board.hbs").unwrap();
     templates.register_template_file("thread", "templates/thread.hbs").unwrap();
     templates.register_template_file("404", "templates/404.hbs").unwrap();
@@ -123,11 +124,16 @@ fn main() {
 
     let mut router = Router::new();
     router.get("/", Arc::new(home_handler)).unwrap();
+    router.get("/install", Arc::new(install_page_handler)).unwrap();
+    router.post("/install", Arc::new(install_handler)).unwrap();
     router.get("/404", Arc::new(not_found_handler)).unwrap();
     router.get("/b/{board:[:alnum:]+}", Arc::new(board_handler)).unwrap();
     router.post("/b/{board:[:alnum:]+}", Arc::new(new_thread_handler)).unwrap();
     router.get(r"/b/{board:[:alnum:]+}/{thread:[\d]+}",
              Arc::new(thread_handler))
+        .unwrap();
+    router.post(r"/b/{board:[:alnum:]+}/{thread:[\d]+}",
+              Arc::new(new_post_handler))
         .unwrap();
     router.set_not_found_handler(Arc::new(not_found_handler));
 

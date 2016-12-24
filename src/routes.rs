@@ -14,6 +14,18 @@ pub fn home_handler(_req: &Request, res: &mut Response, ctx: &Context) {
     res.body(result.as_bytes()).unwrap();
 }
 
+pub fn install_page_handler(_req: &Request, res: &mut Response, ctx: &Context) {
+    info!("install_page handler");
+    let tmpl_ctx = &ctx.config;
+    let result = ctx.templates.render("install", &tmpl_ctx).unwrap();
+    debug!("{}", result);
+    res.body(result.as_bytes()).unwrap();
+}
+
+pub fn install_handler(_req: &Request, res: &mut Response, ctx: &Context) {
+    info!("install handler");
+}
+
 pub fn board_handler(req: &Request, res: &mut Response, ctx: &Context) {
     info!("board handler");
     let params = hayaku::get_path_params(req);
