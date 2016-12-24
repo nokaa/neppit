@@ -4,7 +4,6 @@ name = "neppit"
 version = "0.1.0"
 
 [dependencies]
-diesel = "0.8.0"
 dotenv = "0.8.0"
 env_logger = "0.3.5"
 error-chain = "0.7.1"
@@ -12,15 +11,10 @@ lazy_static = "0.2.2"
 log = "0.3.6"
 postgres = "0.13.3"
 r2d2 = "0.7.1"
-r2d2-diesel = "0.9.0"
 r2d2_postgres = "0.11.1"
 serde = "0.8.16"
 serde_derive = "0.8"
 serde_json = "0.8.3"
-
-[dependencies.diesel_codegen]
-features = ["postgres"]
-version = "0.8.0"
 
 [dependencies.handlebars]
 default-features = false
