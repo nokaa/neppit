@@ -32,15 +32,21 @@ pub fn board_handler(req: &Request, res: &mut Response, ctx: &Context) {
     let board = params.get("board").unwrap_or(&EMPTY_STRING);
     info!("board: {}", board);
 
-    let pool = ctx.db_pool.clone();
-    let board = if let Ok(Some(b)) = db::get_board(pool, board) {
+    let pool = &ctx.db_pool;
+    let board = if let Ok(Some(b)) = db::get_board(pool.clone(), board) {
         b
     } else {
         return not_found_handler(req, res, ctx);
     };
 
+    let active_threads = if let Ok(Some(t)) = db::get_active_threads(pool.clone(), &board) {
+        t
+    } else {
+        Vec::new()
+    };
 
-    let result = ctx.templates.render("board", &board).unwrap();
+
+    let result = ctx.templates.render("board", &(board, active_threads)).unwrap();
     debug!("{}", result);
     res.body(result.as_bytes());
 }

@@ -89,6 +89,21 @@ pub fn get_board(pool: Pool, board_name: &str) -> Result<Option<Board>> {
     }
 }
 
+pub fn get_active_threads(pool: Pool, board: &Board) -> Result<Option<Vec<Post>>> {
+    if board.active_threads.is_empty() {
+        Ok(None)
+    } else {
+        let mut threads = Vec::with_capacity(board.active_threads.len());
+        for id in &board.active_threads {
+            match get_thread(pool.clone(), &board.short_name, *id)? {
+                Some(t) => threads.push(t),
+                None => continue,
+            }
+        }
+        Ok(Some(threads))
+    }
+}
+
 pub fn get_post_number(pool: Pool, board_name: &str) -> Result<i64> {
     let conn = pool.get().unwrap();
 
