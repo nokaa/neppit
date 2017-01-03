@@ -19,7 +19,5 @@ the commands in `Justfile`. Just syntax is very similar to make.
 $ createdb neppit
 # replace `username` `password` and `localhost` as needed
 $ echo "DATABASE_URL=postgres://username:password@localhost/neppit" > .env
-$ just
-$ cargo build --release
-$ cargo run --release
+$ just run-release
 ```
