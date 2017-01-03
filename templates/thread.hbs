@@ -11,7 +11,7 @@
             <label for="email">Email</label><br>
             <input name="email" type="text" /><br>
             <label for="content">Content</label><br>
-            <textarea name="content" rows="24" type="text"></textarea><br>
+            <textarea name="content" rows="10" type="text"></textarea><br>
             <button name="action" type="submit">New Post</button>
         </form>
         <br><br>
@@ -23,8 +23,8 @@
         </li>
 
         {{#each this.2}}
-            <li>
-                <h3>{{this.post_number}} {{this.name}}</h3>
+            <li id="{{this.post_number}}">
+                <h3><a href="#{{this.post_number}}">No.{{this.post_number}}</a> {{this.name}}</h3>
                 <p>{{this.content}}</p>
             </li>
         {{/each}}
