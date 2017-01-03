@@ -127,16 +127,16 @@ fn main() {
     router.get("/install", Arc::new(install_page_handler)).unwrap();
     router.post("/install", Arc::new(install_handler)).unwrap();
     router.get("/404", Arc::new(not_found_handler)).unwrap();
-    router.get("/b/{board:[:alnum:]+}", Arc::new(board_handler)).unwrap();
-    router.post("/b/{board:[:alnum:]+}", Arc::new(new_thread_handler)).unwrap();
-    router.get(r"/b/{board:[:alnum:]+}/{thread:[\d]+}",
+    router.get("/b/{board:[[:word:]]+}", Arc::new(board_handler)).unwrap();
+    router.post("/b/{board:[[:word:]]+}", Arc::new(new_thread_handler)).unwrap();
+    router.get(r"/b/{board:[[:word:]]+}/{thread:[\d]+}",
              Arc::new(thread_handler))
         .unwrap();
-    router.post(r"/b/{board:[:alnum:]+}/{thread:[\d]+}",
+    router.post(r"/b/{board:[[:word:]]+}/{thread:[\d]+}",
               Arc::new(new_post_handler))
         .unwrap();
     router.set_not_found_handler(Arc::new(not_found_handler));
 
     info!("listening on {}", addr);
-    Http::new(router, ctx).sanitize().threads(4).listen_and_serve(addr);
+    Http::new(router, ctx).threads(4).listen_and_serve(addr);
 }

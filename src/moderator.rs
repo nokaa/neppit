@@ -1,6 +1,6 @@
 pub struct Mod {
-    username: String,
-    password: String,
-    boards: Vec<String>,
-    admin: bool,
+    pub username: String,
+    pub password: String,
+    pub boards: Vec<String>,
+    pub admin: bool,
 }

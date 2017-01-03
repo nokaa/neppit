@@ -49,7 +49,7 @@ pub fn new_thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
     info!("new thread handler");
     let params = hayaku::get_path_params(req);
     let board = params.get("board").unwrap();
-    let name = req.form_value("name").unwrap_or("".to_string());
+    let name = req.form_value("name").unwrap_or("Anonymous".to_string());
     let subject = req.form_value("subject").unwrap_or("".to_string());
     let email = req.form_value("email").unwrap_or("".to_string());
     let content = req.form_value("content").unwrap_or("".to_string());
@@ -100,7 +100,9 @@ pub fn new_thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
         info!("error: {}", e);
         return not_found_handler(req, res, ctx);
     } else {
-        res.redirect(Status::Found, format!("/b/{}/{}", board, post_number), b"");
+        res.redirect(Status::Found,
+                     format!("/b/{}/{}", board, post_number),
+                     b"Thread created!");
     }
 }
 
@@ -131,7 +133,14 @@ pub fn thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
         return not_found_handler(req, res, ctx);
     };
 
-    let result = ctx.templates.render("thread", &(board, thread)).unwrap();
+    let posts = if let Ok(Some(p)) = db::get_posts(pool.clone(), board_name, thread_number) {
+        p
+    } else {
+        info!("Posts for thread {} not found!", thread_number);
+        Vec::new()
+    };
+
+    let result = ctx.templates.render("thread", &(board, thread, posts)).unwrap();
     debug!("{}", result);
     res.body(result.as_bytes());
 }
@@ -141,7 +150,13 @@ pub fn new_post_handler(req: &Request, res: &mut Response, ctx: &Context) {
     let params = hayaku::get_path_params(req);
     let board = &params["board"];
     let thread_number = &params["thread"];
-    let name = req.form_value("name").unwrap_or("".to_string());
+    let thread_number = if let Ok(t) = i64::from_str(thread_number) {
+        t
+    } else {
+        info!("Error converting to i64!");
+        return not_found_handler(req, res, ctx);
+    };
+    let name = req.form_value("name").unwrap_or("Anonymous".to_string());
     let email = req.form_value("email").unwrap_or("".to_string());
     let content = req.form_value("content").unwrap_or("".to_string());
 
@@ -159,19 +174,48 @@ pub fn new_post_handler(req: &Request, res: &mut Response, ctx: &Context) {
         name
     };
 
-    // TODO(nokaa): convert thread number in path to i64.
-    let thread_number = 0;
-
     let pool = &ctx.db_pool;
     // Make sure that board exists
     let board_exists = db::board_exists(pool.clone(), board);
     if board_exists.is_err() || !board_exists.unwrap() {
+        info!("Board {} does not exist!", board);
         return not_found_handler(req, res, ctx);
     }
+
     // Make sure that thread exists
     let thread_exists = db::thread_exists(pool.clone(), board, thread_number);
     if thread_exists.is_err() || !thread_exists.unwrap() {
+        info!("thread {} does not exist!", thread_number);
         return not_found_handler(req, res, ctx);
+    }
+
+    // Get post number
+    let post_number = if let Ok(num) = db::get_post_number(pool.clone(), board) {
+        num
+    } else {
+        info!("Unable to get post number!");
+        return not_found_handler(req, res, ctx);
+    };
+
+    let post = Post {
+        post_number: post_number,
+        board: board.clone(),
+        subject: None,
+        name: name,
+        email: email,
+        content: content,
+        thread: false,
+        parent: Some(thread_number),
+    };
+
+    if let Err(e) = db::create_post(pool.clone(), post) {
+        info!("Unable to create thread!");
+        info!("error: {}", e);
+        return not_found_handler(req, res, ctx);
+    } else {
+        res.redirect(Status::Found,
+                     format!("/b/{}/{}", board, thread_number),
+                     b"Post created!");
     }
 }
 
