@@ -64,20 +64,22 @@ pub fn get_catalog(pool: Pool, board: &Board) -> Result<Option<Vec<Thread>>> {
 // Retrieves all posts associated with a thread.
 pub fn get_thread(pool: Pool, board_name: &str, thread_number: i64) -> Result<Vec<Post>> {
     let conn = pool.get().unwrap();
+    // TODO(nokaa): Figure out why we need to do a wildcard select
     let rows =
-        conn.query("SELECT (post_number, subject, name, email, content) FROM posts WHERE \
-                    board = $1 AND parent = $2",
-                   &[&board_name, &thread_number])?;
+        /*conn.query("SELECT (post_number, subject, name, email, content) FROM posts WHERE board = \
+                    $1 AND parent = $2",
+                   &[&board_name, &thread_number])?;*/
+        conn.query("SELECT * FROM posts WHERE board = $1 AND parent = $2", &[&board_name, &thread_number])?;
     let mut thread = Vec::with_capacity(rows.len());
     for row in rows.iter() {
         let post = Post {
             post_number: row.get(0),
             parent: thread_number,
             board: board_name.to_string(),
-            subject: row.get(1),
-            name: row.get(2),
-            email: row.get(3),
-            content: row.get(4),
+            subject: row.get(3),
+            name: row.get(4),
+            email: row.get(5),
+            content: row.get(6),
         };
         thread.push(post);
     }

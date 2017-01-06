@@ -107,7 +107,7 @@ pub fn new_thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
 }
 
 pub fn thread_handler(req: &Request, res: &mut Response, ctx: &Context) {
-    info!("thread handler");
+    info!("thread handler: {}", req.path());
     let params = hayaku::get_path_params(req);
     let board_name = &params["board"];
     let thread_number = &params["thread"];
@@ -193,7 +193,7 @@ pub fn new_post_handler(req: &Request, res: &mut Response, ctx: &Context) {
     };
 
     if let Err(e) = db::create_post(pool.clone(), post) {
-        info!("Unable to create thread!");
+        info!("Unable to create post!");
         info!("error: {}", e);
         return not_found_handler(req, res, ctx);
     } else {

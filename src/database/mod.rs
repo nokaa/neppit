@@ -19,7 +19,8 @@ pub fn create_tables(pool: Pool) -> Result<()> {
                     short_name VARCHAR PRIMARY KEY,
                     long_name VARCHAR NOT NULL,
                     description TEXT NOT NULL,
-                    post_number BIGINT NOT NULL
+                    post_number BIGINT NOT NULL,
+                    active_threads INT NOT NULL
                   )",
                  &[])?;
 
@@ -64,9 +65,10 @@ pub fn create_boards(pool: Pool, boards: &[NewBoard]) -> Result<()> {
     let conn = pool.get().unwrap();
 
     for b in boards {
-        conn.execute("INSERT INTO boards (short_name, long_name, description, post_number) \
-                      VALUES ($1, $2, $3, $4) ON CONFLICT (short_name) DO NOTHING",
-                     &[&b.short_name, &b.long_name, &b.description, &0i64])?;
+        conn.execute("INSERT INTO boards (short_name, long_name, description, post_number, \
+                      active_threads) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (short_name) DO \
+                      NOTHING",
+                     &[&b.short_name, &b.long_name, &b.description, &0i64, &b.active_threads])?;
     }
 
     Ok(())
@@ -109,7 +111,7 @@ pub fn create_thread(pool: Pool, thread: Post) -> Result<i64> {
     let time = ::chrono::UTC::now().naive_utc();
     conn.execute("INSERT INTO posts (post_number, parent, board, subject, name, email, content, \
                   thread, pinned, active, last_modified) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, \
-                  $9, $10);",
+                  $9, $10, $11);",
                  &[&post_number,
                    &post_number,
                    &thread.board,
@@ -136,8 +138,7 @@ pub fn create_post(pool: Pool, post: Post) -> Result<()> {
     let post_number: i64 = rows.get(0).get(0);
 
     conn.execute("INSERT INTO posts (post_number, parent, board, subject, name, email, content, \
-                  thread, pinned, active, last_modified,
-                  ) VALUES ($1, $2, $3, \
+                  thread, pinned, active, last_modified) VALUES ($1, $2, $3, \
                   $4, $5, $6, $7, $8, $9, $10, $11);",
                  &[&post_number,
                    &post.parent,

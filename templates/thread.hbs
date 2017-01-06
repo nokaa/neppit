@@ -17,12 +17,8 @@
         <br><br>
         <h1>{{this.0.long_name}}</h1>
         <p>{{this.0.description}}</p>
-        <li>
-            <h3>{{this.1.post_number}} {{this.1.name}}</h3>
-            <p>{{this.1.content}}</p>
-        </li>
 
-        {{#each this.2}}
+        {{#each this.1}}
             <li id="{{this.post_number}}">
                 <h3><a href="#{{this.post_number}}">No.{{this.post_number}}</a> {{this.name}}</h3>
                 <p>{{this.content}}</p>
