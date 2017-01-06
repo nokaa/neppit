@@ -15,12 +15,18 @@ rules = [
 # value commented out.
 #proxy_ip_header = ""
 
-[boards.a]
+[boards.w]
+# The short name of the board, used for urls
 short_name = "w"
+# The full board name
 long_name = "Weeb"
+# The board description
 description = "Talk about anime and manga!"
+# The maximum number of active threads
+active_threads = 20
 
 [boards.rust]
 short_name = "rust"
 long_name = "Rust"
 description = "Talk about the Rust programming language"
+active_threads = 20

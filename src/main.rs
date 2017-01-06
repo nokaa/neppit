@@ -18,6 +18,7 @@ extern crate error_chain;
 extern crate lazy_static;
 extern crate hayaku;
 extern crate handlebars;
+extern crate chrono;
 extern crate dotenv;
 extern crate postgres;
 extern crate r2d2;
@@ -49,9 +50,9 @@ use r2d2_postgres::{PostgresConnectionManager, TlsMode};
 use hayaku::{Http, Router};
 use handlebars::Handlebars;
 
-lazy_static! {
+/*lazy_static! {
     static ref EMPTY_STRING: String = String::from("");
-}
+}*/
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Config {

@@ -11,9 +11,8 @@ pub struct Board {
     pub short_name: String,
     pub long_name: String,
     pub description: String,
+    pub active_threads: i32,
     pub post_number: i64,
-    // The currently active threads for this board
-    pub active_threads: Vec<i64>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -21,4 +20,5 @@ pub struct NewBoard {
     pub short_name: String,
     pub long_name: String,
     pub description: String,
+    pub active_threads: i32,
 }
