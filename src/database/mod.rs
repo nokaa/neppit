@@ -143,8 +143,14 @@ pub fn create_post(pool: Pool, post: Post) -> Result<()> {
                    &post.content,
                    &false,
                    &false,
-                   &false,
+                   &true,
                    &None::<::chrono::NaiveDateTime>])?;
     trans.commit()?;
     Ok(())
 }
+
+// disable thread
+/*
+with rows as (SELECT post_number from posts ORDER BY last_modified LIMIT 1)
+UPDATE posts SET active = false WHERE parent = (SELECT post_number from rows)
+ */

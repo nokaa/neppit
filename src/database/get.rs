@@ -69,7 +69,7 @@ pub fn get_thread(pool: Pool, board_name: &str, thread_number: i64) -> Result<Ve
         /*conn.query("SELECT (post_number, subject, name, email, content) FROM posts WHERE board = \
                     $1 AND parent = $2",
                    &[&board_name, &thread_number])?;*/
-        conn.query("SELECT * FROM posts WHERE board = $1 AND parent = $2", &[&board_name, &thread_number])?;
+        conn.query("SELECT * FROM posts WHERE board = $1 AND parent = $2 AND active = true", &[&board_name, &thread_number])?;
     let mut thread = Vec::with_capacity(rows.len());
     for row in rows.iter() {
         let post = Post {
