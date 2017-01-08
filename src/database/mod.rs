@@ -99,31 +99,27 @@ pub fn thread_exists(pool: Pool, board_name: &str, thread_number: i64) -> Result
 
 pub fn create_thread(pool: Pool, thread: Post) -> Result<i64> {
     let conn = pool.get().unwrap();
+    // let trans = conn.transaction()?;
 
-    // Get the post number for this post
-    let rows =
-        conn.query("UPDATE boards SET post_number = post_number + 1 WHERE short_name = $1 \
-                    RETURNING post_number",
-                   &[&thread.board])?;
-    let post_number: i64 = rows.get(0).get(0);
     let time = ::chrono::UTC::now().naive_utc();
+    let rows =
+        conn.query("with rows as (UPDATE boards SET post_number = post_number + 1 where \
+                    short_name = $1 returning post_number) INSERT INTO posts (post_number, \
+                    parent, board, subject, name, email, content, thread, pinned, active, \
+                    last_modified) VALUES ((SELECT post_number FROM rows), (SELECT post_number \
+                    FROM rows), $1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING post_number;",
+                   &[&thread.board,
+                     &thread.subject,
+                     &thread.name,
+                     &thread.email,
+                     &thread.content,
+                     &true,
+                     &false,
+                     &true,
+                     &(Some(time))])?;
+    // trans.commit()?;
 
-    let trans = conn.transaction()?;
-    trans.execute("INSERT INTO posts (post_number, parent, board, subject, name, email, content, \
-                  thread, pinned, active, last_modified) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, \
-                  $9, $10, $11);",
-                 &[&post_number,
-                   &post_number,
-                   &thread.board,
-                   &thread.subject,
-                   &thread.name,
-                   &thread.email,
-                   &thread.content,
-                   &true,
-                   &false,
-                   &true,
-                   &Some(time)])?;
-    trans.commit()?;
+    let post_number: i64 = rows.get(0).get(0);
     Ok(post_number)
 }
 
