@@ -11,8 +11,8 @@ js:
     @mkdir -p resources
     @cp javascript/* resources
 
-run:
-    @cargo run
+run: build
+    @RUST_LOG=info ./target/debug/neppit
 
 clean:
     rm -r resources target

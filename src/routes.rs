@@ -2,6 +2,7 @@ use hayaku::{self, Request, Response, Status};
 
 use super::Context;
 use database as db;
+use moderator::Mod;
 use post::Post;
 
 use std::str::FromStr;
@@ -22,8 +23,34 @@ pub fn install_page_handler(_req: &Request, res: &mut Response, ctx: &Context) {
     res.body(result.as_bytes());
 }
 
-pub fn install_handler(_req: &Request, res: &mut Response, ctx: &Context) {
+pub fn install_handler(req: &Request, res: &mut Response, ctx: &Context) {
     info!("install handler");
+    let username = req.form_value("admin_name").unwrap_or("".to_string());
+    let password = req.form_value("admin_password").unwrap_or("".to_string());
+    let password_confirm = req.form_value("admin_password_confirm").unwrap_or("".to_string());
+
+    if username.is_empty() || password.is_empty() || password_confirm.is_empty() {
+        res.redirect(Status::Found, "/install", b"One or more inputs is empty!");
+    }
+
+    if password == password_confirm {
+        let admin = Mod {
+            username: username,
+            password: password,
+            boards: Vec::new(),
+            admin: true,
+        };
+
+        let pool = &ctx.db_pool;
+        if let Err(e) = db::create_admin(pool.clone(), admin) {
+            info!("Unable to create admin!");
+            info!("error: {}", e);
+            res.redirect(Status::Found, "/install", b"Database error!")
+        }
+        res.redirect(Status::Found, "/", b"Admin created!")
+    } else {
+        res.redirect(Status::Found, "/install", b"Passwords do not match!")
+    }
 }
 
 pub fn board_handler(req: &Request, res: &mut Response, ctx: &Context) {
