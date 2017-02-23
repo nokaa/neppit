@@ -5,17 +5,20 @@
         <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1.0"/>
     </head>
     <body>
+        <p>{{this.0.short_name}}</p>
+        <p>{{this.0.long_name}}</p>
+        <p>{{this.0.description}}</p>
         <form method="POST" action="">
             <label for="subject">Subject</label><br>
             <input name="subject" type="text" /><br>
             <label for="content">Content</label><br>
             <textarea name="content" rows="24" type="text"></textarea><br>
             <button>New Thread</button>
-        </form>
-        {{#each this}}
+        </form><br>
+        {{#each this.1}}
             <li>
                 <a href="/b/{{this.board}}/{{this.post_number}}">{{this.content}}</a>
-            </li>
+            </li><br>
         {{/each}}
     </body>
 </html>

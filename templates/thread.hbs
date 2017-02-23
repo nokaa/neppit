@@ -5,6 +5,9 @@
         <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1.0"/>
     </head>
     <body>
+        <p>{{this.0.short_name}}</p>
+        <p>{{this.0.long_name}}</p>
+        <p>{{this.0.description}}</p>
         <form method="POST" action="">
             <label for="content">Content</label><br>
             <textarea name="content" rows="10" type="text"></textarea><br>
@@ -12,7 +15,7 @@
         </form>
         <br><br>
 
-        {{#each this}}
+        {{#each this.1}}
             <details open="" id="{{this.post_number}}">
                 <summary>Anonymous {{this.last_modified}} <a href="#{{this.post_number}}">No. {{this.post_number}}</a></summary>
                 <p>{{this.content}}</p>

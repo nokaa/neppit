@@ -20,15 +20,16 @@ pub fn home(ctx: State<Context>) -> Template {
     Template::render("home", &ctx.config)
 }
 
-#[get("/b/<board>")]
-pub fn board(ctx: State<Context>, board: &str) -> Result<Template> {
-    if ctx.config.boards.get(board).is_none() {
+#[get("/b/<board_name>")]
+pub fn board(ctx: State<Context>, board_name: &str) -> Result<Template> {
+    let board = ctx.config.boards.get(board_name);
+    if board.is_none() {
         return Ok(not_found());
     }
     let pool = ctx.db_pool.clone();
-    let mut catalog = db::read::catalog(pool, board)?;
+    let mut catalog = db::read::catalog(pool, board_name)?;
     catalog.reverse();
-    Ok(Template::render("board", &catalog))
+    Ok(Template::render("board", &(board.unwrap(), catalog)))
 }
 
 #[post("/b/<board>", data = "<new_thread_form>")]
@@ -47,15 +48,16 @@ pub fn create_thread(ctx: State<Context>,
     Ok(Some(Redirect::to(&redirect)))
 }
 
-#[get("/b/<board>/<thread>")]
-pub fn thread(ctx: State<Context>, board: &str, thread: i64) -> Result<Template> {
-    if ctx.config.boards.get(board).is_none() {
+#[get("/b/<board_name>/<thread>")]
+pub fn thread(ctx: State<Context>, board_name: &str, thread: i64) -> Result<Template> {
+    let board = ctx.config.boards.get(board_name);
+    if board.is_none() {
         return Ok(not_found());
     }
 
     let pool = ctx.db_pool.clone();
-    let thread = db::read::thread(pool, board, thread)?;
-    Ok(Template::render("thread", &thread))
+    let thread = db::read::thread(pool, board_name, thread)?;
+    Ok(Template::render("thread", &(board.unwrap(), thread)))
 }
 
 #[post("/b/<board>/<thread>", data = "<new_post_form>")]
