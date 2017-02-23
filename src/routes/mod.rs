@@ -42,6 +42,10 @@ pub fn create_thread(ctx: State<Context>,
     }
 
     let new_thread_form = new_thread_form.get();
+    if new_thread_form.content.is_empty() && new_thread_form.subject.is_empty() {
+        return Ok(None);
+    }
+
     let pool = ctx.db_pool.clone();
     let thread_number = db::create::thread(pool, board, new_thread_form)?;
     let redirect = format!("/b/{}/{}", board, thread_number);
@@ -71,6 +75,10 @@ pub fn create_post(ctx: State<Context>,
     }
 
     let new_post_form = new_post_form.get();
+    if new_post_form.content.is_empty() {
+        return Ok(None);
+    }
+
     let pool = ctx.db_pool.clone();
     let post_number = db::create::post(pool, board, thread, new_post_form)?;
 
