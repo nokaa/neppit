@@ -1,6 +1,7 @@
 # Neppit [![Build Status](https://travis-ci.org/nokaa/neppit.svg?branch=master)](https://travis-ci.org/nokaa/neppit)
 
-An anonymous Internet forum.
+An anonymous Internet forum. You can see it in action at
+[https://forum.nokaa.moe](https://forum.nokaa.moe).
 
 ### Install
 Make sure that you have setup [Postgresql](https://wiki.archlinux.org/index.php/PostgreSQL).
