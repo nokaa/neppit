@@ -1,0 +1,26 @@
+name = "Neppit"
+rules = [
+"1. Do not post illegal content",
+"2. You must be 18 or older to post on or view any boards/threads"
+]
+
+# What port the server runs on. Defaults to ":3000"
+#port = ":3333"
+
+# If neppit is run behind a proxy of some sort, e.g. nginx, you will
+# want to set a header equal to the remoteaddr value. proxy_ip_header should
+# be set to that header name.
+#
+# If neppit is not behind a proxy/load balancer, you can leave this
+# value commented out.
+#proxy_ip_header = ""
+
+[boards.prog]
+short_name = "prog"
+long_name = "Programming and DIY"
+description = "Talk about topics related to programming and DIY. Tech news belongs on /news/."
+
+[boards.news]
+short_name = "news"
+long_name = "News"
+description = "Discussion of tech news. Similar to HackerNews or Lobsters."

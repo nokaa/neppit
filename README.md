@@ -18,3 +18,17 @@ $ createdb neppit
 $ echo "DATABASE_URL=postgres://username:password@localhost/neppit" > .env
 $ just run-release
 ```
+
+### Non-Goals
+  - User Logins: Neppit is anonymous
+  - Shadow banning: It's a disgusting practice
+
+### Wish List
+These are features that would be nice to have, but that I might not work on.
+If you would like to work on one of the features, just open an issue about
+which feature you would like to work on.
+
+  - Better SQL
+  - Basic Moderation: Login for post deletion, possibly IP ban
+  - Greentext
+  - Minor bug fixes

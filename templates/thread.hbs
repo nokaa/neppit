@@ -8,17 +8,15 @@
         <form method="POST" action="">
             <label for="content">Content</label><br>
             <textarea name="content" rows="10" type="text"></textarea><br>
-            <button name="action" type="submit">New Post</button>
+            <button>New Post</button>
         </form>
         <br><br>
-        <h1>{{this.0.long_name}}</h1>
-        <p>{{this.0.description}}</p>
 
-        {{#each this.1}}
-            <li id="{{this.post_number}}">
-                <h3><a href="#{{this.post_number}}">No.{{this.post_number}}</a> {{this.name}}</h3>
+        {{#each this}}
+            <details open="" id="{{this.post_number}}">
+                <summary>Anonymous {{this.last_modified}} <a href="#{{this.post_number}}">No. {{this.post_number}}</a></summary>
                 <p>{{this.content}}</p>
-            </li>
+            </details>
         {{/each}}
     </body>
 </html>

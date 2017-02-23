@@ -5,16 +5,14 @@
         <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1.0"/>
     </head>
     <body>
-        <h1>{{this.0.long_name}}</h1>
-        <p>{{this.0.description}}</p>
         <form method="POST" action="">
             <label for="subject">Subject</label><br>
             <input name="subject" type="text" /><br>
             <label for="content">Content</label><br>
             <textarea name="content" rows="24" type="text"></textarea><br>
-            <button name="action" type="submit">New Thread</button>
+            <button>New Thread</button>
         </form>
-        {{#each this.1}}
+        {{#each this}}
             <li>
                 <a href="/b/{{this.board}}/{{this.post_number}}">{{this.content}}</a>
             </li>
