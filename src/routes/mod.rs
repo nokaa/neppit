@@ -12,12 +12,19 @@ use self::types::*;
 
 use rocket::State;
 use rocket::request::Form;
-use rocket::response::Redirect;
+use rocket::response::{NamedFile, Redirect};
 use rocket_contrib::Template;
+
+use std::path::{Path, PathBuf};
 
 #[get("/")]
 pub fn home(ctx: State<Context>) -> Template {
     Template::render("home", &ctx.config)
+}
+
+#[get("/resources/<file..>")]
+pub fn resources(file: PathBuf) -> Option<NamedFile> {
+    NamedFile::open(Path::new("resources/").join(file)).ok()
 }
 
 #[get("/b/<board_name>")]
@@ -29,7 +36,7 @@ pub fn board(ctx: State<Context>, board_name: &str) -> Result<Template> {
     let pool = ctx.db_pool.clone();
     let mut catalog = db::read::catalog(pool, board_name)?;
     catalog.reverse();
-    Ok(Template::render("board", &(board.unwrap(), catalog)))
+    Ok(Template::render("board", &(&ctx.config, board.unwrap(), catalog)))
 }
 
 #[post("/b/<board>", data = "<new_thread_form>")]
@@ -61,7 +68,7 @@ pub fn thread(ctx: State<Context>, board_name: &str, thread: i64) -> Result<Temp
 
     let pool = ctx.db_pool.clone();
     let thread = db::read::thread(pool, board_name, thread)?;
-    Ok(Template::render("thread", &(board.unwrap(), thread)))
+    Ok(Template::render("thread", &(&ctx.config, board.unwrap(), thread)))
 }
 
 #[post("/b/<board>/<thread>", data = "<new_post_form>")]

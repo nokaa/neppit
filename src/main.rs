@@ -95,7 +95,7 @@ fn main() {
     rocket::ignite()
         .manage(ctx)
         .mount("/",
-               routes![home, board, create_thread, thread, create_post])
+               routes![home, resources, board, create_thread, thread, create_post])
         .catch(errors![not_found])
         .launch()
 }

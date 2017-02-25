@@ -1,25 +1,29 @@
 <!doctype html>
 <html>
     <head>
+        <title>{{this.0.name}}</title>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1.0"/>
+        <link rel="stylesheet" href="/resources/style.min.css">
     </head>
     <body>
-        <p>{{this.0.short_name}}</p>
-        <p>{{this.0.long_name}}</p>
-        <p>{{this.0.description}}</p>
+        <div class="board">
+            <h3>/{{this.1.short_name}}/</h3>
+            <h3>{{this.1.long_name}}</h3>
+            <h5>{{this.1.description}}</h5>
+        </div>
         <form method="POST" action="">
             <label for="content">Content</label><br>
-            <textarea name="content" rows="10" type="text"></textarea><br>
+            <textarea name="content" cols="50" rows="10" type="text"></textarea><br>
             <button>New Post</button>
         </form>
         <br><br>
 
-        {{#each this.1}}
-            <details open="" id="{{this.post_number}}">
+        {{#each this.2}}
+            <details open="" id="{{this.post_number}}" class="post">
                 <summary>Anonymous {{this.last_modified}} <a href="#{{this.post_number}}">No. {{this.post_number}}</a></summary>
                 <p>{{this.content}}</p>
-            </details>
+            </details><br>
         {{/each}}
     </body>
 </html>

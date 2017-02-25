@@ -1,14 +1,17 @@
 <!doctype html>
 <html>
     <head>
+        <title>{{name}}</title>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1.0"/>
+        <link rel="stylesheet" href="/resources/style.min.css">
     </head>
     <body>
         <h1>{{name}}</h1>
         {{#each boards}}
             <h3><a href="/b/{{this.short_name}}">{{this.long_name}}</a></h3>
         {{/each}}
+        <h2>Rules</h2>
         {{#each rules}}
             <li>{{this}}</li>
         {{/each}}
