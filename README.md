@@ -36,3 +36,6 @@ which feature you would like to work on.
   - Link parsing
   - Improved styling
   - Minor bug fixes
+    - Post date display should only show e.g. 2017-01-01 00:00:01
+    - You can attempt to load a post that doesn't exist, e.g. go to [https://forum.nokaa.moe/b/news/1000000](https://forum.nokaa.moe/b/news/1000000)
+    - Entering the url to a reply (`/reply`) should load `/thread#reply`, currently loads the thread data at `/reply` which affects new post creation.

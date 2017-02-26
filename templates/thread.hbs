@@ -8,7 +8,8 @@
     </head>
     <body>
         <div class="board">
-            <h3>/{{this.1.short_name}}/</h3>
+            <a href="/"><h1>{{this.0.name}}</h1></a><br>
+            <a href="/b/{{this.1.short_name}}"><h3>/{{this.1.short_name}}/</h3></a>
             <h3>{{this.1.long_name}}</h3>
             <h5>{{this.1.description}}</h5>
         </div>
@@ -23,6 +24,7 @@
         {{#each this.2}}
             <details open="" id="{{this.post_number}}" class="post">
                 <summary>Anonymous {{this.last_modified}} <a href="#{{this.post_number}}">No. {{this.post_number}}</a></summary>
+                <h4>{{this.subject}}</h4>
                 <p>{{{this.content}}}</p>
             </details><br>
         {{/each}}
