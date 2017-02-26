@@ -3,6 +3,8 @@
 An anonymous Internet forum. You can see it in action at
 [https://forum.nokaa.moe](https://forum.nokaa.moe).
 
+Neppit is intended as a forum for software projects; an alternative to other options such as _discourse_.
+
 ### Install
 Make sure that you have setup [Postgresql](https://wiki.archlinux.org/index.php/PostgreSQL).
 
