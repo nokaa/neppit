@@ -53,8 +53,14 @@ pub fn create_thread(ctx: State<Context>,
         return Ok(None);
     }
 
+    let content = parse_content(&new_thread_form.content);
+    let new_thread_form = NewThread {
+        subject: new_thread_form.subject.clone(),
+        content: content,
+    };
+
     let pool = ctx.db_pool.clone();
-    let thread_number = db::create::thread(pool, board, new_thread_form)?;
+    let thread_number = db::create::thread(pool, board, &new_thread_form)?;
     let redirect = format!("/b/{}/{}", board, thread_number);
     Ok(Some(Redirect::to(&redirect)))
 }
@@ -85,9 +91,11 @@ pub fn create_post(ctx: State<Context>,
     if new_post_form.content.is_empty() {
         return Ok(None);
     }
+    let content = parse_content(&new_post_form.content);
+    let new_post_form = NewPost { content: content };
 
     let pool = ctx.db_pool.clone();
-    let post_number = db::create::post(pool, board, thread, new_post_form)?;
+    let post_number = db::create::post(pool, board, thread, &new_post_form)?;
 
     let thread = format!("/b/{}/{}#{}", board, thread, post_number);
     Ok(Some(Redirect::to(&thread)))
@@ -96,4 +104,45 @@ pub fn create_post(ctx: State<Context>,
 #[error(404)]
 pub fn not_found() -> Template {
     Template::render("404", &())
+}
+
+fn parse_content(content: &str) -> String {
+    let mut parsed = String::new();
+
+    for line in content.lines() {
+        if line.starts_with('>') {
+            // green text
+            let line = html_escape(line);
+            parsed.push_str("<span class=\"gtext\">");
+            parsed.push_str(&line);
+            parsed.push_str("</span>")
+        } else {
+            let line = html_escape(line);
+            parsed.push_str(&line);
+        }
+        parsed.push_str("<br>");
+    }
+
+    parsed
+}
+
+// Taken from handlebars-rust
+use regex::{Captures, Regex};
+
+lazy_static!{
+    static ref DEFAULT_REPLACE: Regex = Regex::new(">|<|\"|&").unwrap();
+}
+
+fn html_escape(data: &str) -> String {
+    DEFAULT_REPLACE.replace_all(data, |cap: &Captures| {
+                       match cap.get(0).map(|m| m.as_str()) {
+                           Some("<") => "&lt;",
+                           Some(">") => "&gt;",
+                           Some("\"") => "&quot;",
+                           Some("&") => "&amp;",
+                           _ => unreachable!(),
+                       }
+                       .to_owned()
+                   })
+                   .into_owned()
 }

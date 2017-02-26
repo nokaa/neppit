@@ -20,10 +20,12 @@
         <br><br>
 
         {{#each this.2}}
+        <div>
             <details open="" id="{{this.post_number}}" class="post">
                 <summary>Anonymous {{this.last_modified}} <a href="#{{this.post_number}}">No. {{this.post_number}}</a></summary>
-                <p>{{this.content}}</p>
+                <p>{{{this.content}}}</p>
             </details><br>
         {{/each}}
+        </div>
     </body>
 </html>

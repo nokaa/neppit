@@ -12,9 +12,12 @@ extern crate dotenv;
 extern crate env_logger;
 #[macro_use]
 extern crate error_chain;
+#[macro_use]
+extern crate lazy_static;
 #[macro_use(log, info)]
 extern crate log;
 extern crate postgres;
+extern crate regex;
 extern crate rocket;
 extern crate rocket_contrib;
 extern crate r2d2;
