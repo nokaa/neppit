@@ -33,4 +33,6 @@ which feature you would like to work on.
   - Better SQL
   - Basic Moderation: Login for post deletion, bans, etc.
   - Board and post links
+  - Link parsing
+  - Improved styling
   - Minor bug fixes
