@@ -12,6 +12,7 @@
             <h3>{{this.1.long_name}}</h3>
             <h5>{{this.1.description}}</h5>
         </div>
+        <h4>Create a new thread</h4>
         <form method="POST" action="">
             <label for="subject">Subject</label><br>
             <input name="subject" type="text" /><br>
@@ -21,7 +22,8 @@
         </form><br>
         {{#each this.2}}
             <li class="catalog">
-                <a href="/b/{{this.board}}/{{this.post_number}}">{{{this.content}}}</a>
+                <a href="/b/{{this.board}}/{{this.post_number}}">{{this.subject}}</a>
+                {{{this.content}}}
             </li><br>
         {{/each}}
     </body>
