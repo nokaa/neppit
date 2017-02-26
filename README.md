@@ -35,6 +35,7 @@ which feature you would like to work on.
   - Board and post links
   - Link parsing
   - Improved styling
+  - API: Probably a JSON API, maybe look to 4chan for an example
   - Minor bug fixes
     - Post date display should only show e.g. 2017-01-01 00:00:01
     - You can attempt to load a post that doesn't exist, e.g. go to [https://forum.nokaa.moe/b/news/1000000](https://forum.nokaa.moe/b/news/1000000)
