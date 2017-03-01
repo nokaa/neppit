@@ -36,7 +36,8 @@ pub fn catalog(pool: Pool, board: &str) -> Result<Vec<CatalogItem>> {
 pub fn thread(pool: Pool, board: &str, thread_num: i64) -> Result<Vec<Post>> {
     let conn = pool.get().unwrap();
 
-    let rows = conn.query("SELECT * FROM posts WHERE board = $1 AND parent = $2",
+    let rows = conn.query("SELECT * FROM posts WHERE board = $1 AND parent = $2 ORDER \
+                          BY post_number",
                           &[&board, &thread_num])?;
 
     if rows.is_empty() {
